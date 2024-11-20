@@ -32,11 +32,14 @@ def add_task(name: str, description: str, time_to_complete=7):
     """
     session = create_new_session()
     try:
-        new_task = Task(name=name, description=description, date_end=datetime.now()+timedelta(days=time_to_complete))
-        session.add(new_task)
+        if not session.query(Task).filter(Task.name == name).first():
+            new_task = Task(name=name, description=description, date_end=datetime.now()+timedelta(days=time_to_complete))
+            session.add(new_task)
+        else:
+            return {'message': 'Task already exists', 'status': '400'}
     except Exception as e:
         end_sessions_on_exception(session)
-        raise e
+        return {'message': 'Incorrect data', 'status': '400'}
     commit(session)
 
 
@@ -46,3 +49,7 @@ def get_all_tasks():
     end_session(session)
     return tasks
 
+
+def edit_task(data: dict):
+    session = create_new_session()
+    task = session.query(Task).filter_by(id=data['id']).first()

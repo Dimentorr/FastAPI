@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column
+from sqlalchemy import create_engine, Column, ForeignKey, Integer, String
 from sqlalchemy import Integer, String, Date
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -13,6 +13,16 @@ class Task(Base):
     name = Column(String, nullable=False, name='Название')
     description = Column(String, name='Описание')
     date_end = Column(Date, name='Дата окончания')
+    status = Column(Integer, ForeignKey('Статусы.name'), default='В процессе')
 
-    def __repr__(self):
-        return f"<Task(name='{self.name}', date_end='{self.date_end}')>"
+    def __str__(self):
+        return f"name={self.name}, status={self.status}"
+
+
+class StatusTask(Base):
+    __tablename__ = 'Статусы'
+
+    name = Column(String, nullable=False, primary_key=True)
+
+    def __str__(self):
+        return f"{self.name}"
