@@ -90,6 +90,14 @@ def get_or_create_token(name: str, password: str):
         return {'message': 'User not find', 'status': '404'}
 
 
+def check_token(token):
+    session = create_new_session()
+    if session.query(Tokens).filter(Tokens.token == token).first():
+        end_session(session)
+        return True
+    end_session(session)
+    return False
+
 def get_all_tasks():
     session = create_new_session()
     tasks = session.query(Task).all()

@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 
 from models import Base, engine
-from sql_operations import add_task, get_all_tasks, create_user, get_or_create_token
-from validate import Task as ValidateTask, Users as ValidateUsers
+from sql_operations import add_task, get_all_tasks, create_user, get_or_create_token, check_token
+from validate import Task as ValidateTask, Users as ValidateUsers, ValidateToken
 
 from security import security
 
@@ -29,13 +29,17 @@ def get_token(user: ValidateUsers):
 
 
 @api_app.get("/v1/api/tasks")
-def get_tasks_api():
-    return get_all_tasks()
+def get_tasks_api(token: ValidateToken):
+    if check_token(token.token):
+        return get_all_tasks()
+    return {'message': 'Incorrect token', 'status': 401}
 
 
 @api_app.post("/v1/api/add_task")
 def add_task_api(new_task: ValidateTask):
-    if error := add_task(name=new_task.name, description=new_task.description,
-                         time_to_complete=new_task.time_to_complete):
-        return error
-    return {'message': 'Task added successfully', 'status': 200}
+    if check_token(new_task.token):
+        if error := add_task(name=new_task.name, description=new_task.description,
+                             time_to_complete=new_task.time_to_complete):
+            return error
+        return {'message': 'Task added successfully', 'status': 200}
+    return {'message': 'Incorrect token', 'status': 401}
