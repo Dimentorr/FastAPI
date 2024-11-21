@@ -9,4 +9,13 @@ class Task(BaseModel):
     description: str
     time_to_complete: Optional[int] = 0
     
-    model_config = ConfigDict(form_attributes=True)
+    # model_config = ConfigDict(form_attributes=True)
+
+
+class Users(BaseModel):
+    name: str
+    password: str
+
+
+class Tokens(BaseModel):
+    token: str

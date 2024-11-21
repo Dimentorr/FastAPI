@@ -10,6 +10,7 @@ class Task(Base):
     __tablename__ = 'Задачи'
 
     id = Column(Integer, primary_key=True)
+    user = Column(Integer, ForeignKey('Пользователи.id'))
     name = Column(String, nullable=False, name='Название')
     description = Column(String, name='Описание')
     date_end = Column(Date, name='Дата окончания')
@@ -26,3 +27,22 @@ class StatusTask(Base):
 
     def __str__(self):
         return f"{self.name}"
+
+
+class Users(Base):
+    __tablename__ = 'Пользователи'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String, nullable=False)
+    password = Column(String, nullable=False)
+
+    def __str__(self):
+        return f"{self.name}"
+
+
+class Tokens(Base):
+    __tablename__ = 'API-токены'
+
+    id = Column(Integer, primary_key=True)
+    token = Column(String, nullable=False)
+    user = Column(Integer, ForeignKey('Пользователи.id'), nullable=False)
